@@ -1,0 +1,63 @@
+Developing Data Products
+========================================================
+author: Pierre Physics
+date: Last Revisions: February 18, 2017
+transition: rotate
+autosize: true
+
+<style type="text/css">
+body, td {font-size: 10px;}
+code.r{font-size: 10px;}
+pre {font-size: 14px}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+suppressMessages(library(plotly))
+suppressMessages(library(datasets))
+suppressMessages(library(doBy))
+suppressMessages(library(ggplot2))
+```
+
+Introduction
+========================================================
+
+This presentation supports the Shiny application created for the final project assignment of the Coursera, Developing Data Products, class.
+
+The created application features a brief analysis of a <a href="https://shaperssurvey.org">publically available data set</a> presenting the results of a global survey conducted in 2016 by the <a href="https://www.globalshapers.org/fr">Global Shapers Community</a>.
+
+- The application is available at <a href="https://ppssphysics.shinyapps.io/FinalProject/">https://ppssphysics.shinyapps.io/FinalProject/</a>
+- The code supporting the app can be found here: <a href="https://github.com/ppssphysics/ppssphysics.github.io">https://github.com/ppssphysics/ppssphysics.github.io</a>
+
+The objective of this app is to provide an interactive tool to display the results of the survey. </body>
+
+A brief look at the data set
+========================================================
+
+The original data set contains 20079 observations (survey responses) and close to 400 columns corresponding to the different questions asked in the survey. For the purpose of this exercise, we reduced the data set to keep only background profiling questions and the first two insights questions. The code below shows the import of the data abd the total number of completed surveys.
+```{r data1, echo = TRUE}
+rawdata <- read.csv("Data/GS_AS2016_DataSet.csv",header=TRUE,sep=";")
+sum(rawdata$Finished==1)
+```
+
+An example of the available tools
+========================================================
+
+In the Participation tab of the app, one can look at overall participation statistics: the number of completed and partial surveys, the participation by gender and by region. One can select a specific region using the left slide bar to display the results for a specific region. 
+
+```{r plot1, FALSE,fig.align='center',fig.width=10,fig.height=6}
+ggplot(rawdata,aes(factor(rawdata$Gender),fill=factor(rawdata$Gender)))+
+              geom_bar(width=.5,fill="steelblue",colour="steelblue")+
+              labs(title="Overall Gender Participation",x="",y="")+ theme(legend.position="none")
+```
+
+Another Example
+========================================================
+
+The Insights tab allows to interactively look at the results of the answers to two of the survey questions. One can select the desired question to view and also select a specific region. An overall result as well as a split by gender and region are displayed. 
+
+```{r plot2, FALSE,fig.align='center',fig.width=10,fig.height=6}
+insdata <- subset(rawdata,Gender=='Male' | Gender=='Female',select=Finished:Identitiy)
+insdata <- subset(insdata,WorldIs!='',select=Finished:Identitiy)
+ggplot(insdata, aes(Gender, fill=WorldIs)) + geom_bar(width=.5,position="dodge")+labs(title="Would you say the world is...",x="",y="")
+```
